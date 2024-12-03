@@ -81,19 +81,11 @@ echo "\$user ALL=(ALL) ALL" > /etc/sudoers.d/\$user && chmod 0440 /etc/sudoers.d
 EOF
 
 mkdir -p "$tmp"/usr/bin
-makefile root:root 0755 "$tmp"/usr/bin/alpdock-run-portainer <<EOF
+makefile root:root 0755 "$tmp"/usr/bin/alpdock-run-compose <<EOF
 #!/bin/sh
 
-docker volume create portainer_data
-docker run \
-	--detach \
-	--volume=/var/run/docker.sock:/var/run/docker.sock \
-	--volume=portainer_data:/data \
-	--publish=8000:8000 \
-	--publish=9443:9443 \
-	--restart=always \
-	--name=portainer \
-	portainer/portainer-ce:latest
+wget https://github.com/vanderstack/vanderstack-docker-server/raw/main/docker-compose.yml
+docker-compose up -d
 EOF
 
 rc_add devfs sysinit
@@ -112,6 +104,7 @@ rc_add networking boot
 rc_add local boot
 
 rc_add docker default
+rc_add alpdock-run-compose
 rc_add sshd default
 
 rc_add mount-ro shutdown
