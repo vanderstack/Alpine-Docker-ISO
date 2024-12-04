@@ -69,6 +69,7 @@ makefile root:root 0744 "$tmp"/etc/local.d/set_bash.start <<EOF
 sed -i 's|root:/bin/ash|root:/bin/bash|' /etc/passwd
 EOF
 
+mkdir -p "$tmp"/usr/bin
 makefile root:root 0755 "$tmp"/usr/bin/ssh-pwd <<EOF
 EOF
 cat "$SCRIPT_DIR/ssh.dat" > "$tmp"/usr/bin/ssh-pwd
@@ -81,7 +82,6 @@ mkdir /etc/sudoers.d
 echo "\$user ALL=(ALL) ALL" > /etc/sudoers.d/\$user && chmod 0440 /etc/sudoers.d/\$user
 EOF
 
-mkdir -p "$tmp"/usr/bin
 makefile root:root 0755 "$tmp"/usr/bin/hello <<EOF
 #!/bin/sh
 
