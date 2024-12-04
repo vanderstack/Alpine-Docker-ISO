@@ -37,7 +37,7 @@ jobs:
               console.log(`Artifact deleted successfully.`);
               
               console.log('Remaining artifacts:');
-              response.data.artifacts.filter(artifact => artifact.id != artifactToDelete).forEach(artifact => {
+              response.data.artifacts.filter(artifact => artifact.id != artifactId).forEach(artifact => {
                 console.log(`ID: ${artifact.id}, Workflow: ${artifact.workflow_run.head_branch}, SHA: Workflow: ${artifact.workflow_run.head_sha}, Created: ${artifact.created_at}, Download: ${artifact.archive_download_url}`);
               });
               
