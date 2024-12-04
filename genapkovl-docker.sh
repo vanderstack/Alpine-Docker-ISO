@@ -81,7 +81,7 @@ EOF
 makefile root:root 0744 "$tmp"/etc/local.d/add_user.start <<EOF
 #!/bin/ash
 user="vanderstack"
-echo -e "\$user\n\$SSHPASS" | adduser \$user -s /bin/bash
+echo -e "\$user\n\$SSHPASSWORD" | adduser \$user -s /bin/bash
 mkdir /etc/sudoers.d
 echo "\$user ALL=(ALL) ALL" > /etc/sudoers.d/\$user && chmod 0440 /etc/sudoers.d/\$user
 EOF
