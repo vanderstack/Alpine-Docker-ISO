@@ -1,4 +1,4 @@
-name: Delete GitHub Artifacts
+name: Delete GitHub Artifact
 
 on:
   workflow_dispatch:
