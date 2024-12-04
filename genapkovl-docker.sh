@@ -98,13 +98,13 @@ done
 echo "Docker is running."
 
 # Create directory for docker-compose file
-mkdir -p "$COMPOSE_DIR"
-cd "$COMPOSE_DIR" || exit 1
+mkdir -p "\$COMPOSE_DIR"
+cd "\$COMPOSE_DIR" || exit 1
 
 # Download the docker-compose.yml file
 echo "Downloading docker-compose.yml..."
-if ! wget -O docker-compose.yml "$COMPOSE_URL"; then
-    echo "Error: Failed to download docker-compose.yml from $COMPOSE_URL."
+if ! wget -O docker-compose.yml "\$COMPOSE_URL"; then
+    echo "Error: Failed to download docker-compose.yml from \$COMPOSE_URL."
     exit 1
 fi
 
