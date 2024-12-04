@@ -84,9 +84,11 @@ mkdir -p "$tmp"/usr/bin
 makefile root:root 0755 "$tmp"/usr/bin/alpdock-run-compose <<EOF
 #!/bin/sh
 
+set -x
+
 # Variables
 COMPOSE_URL="https://github.com/vanderstack/vanderstack-docker-server/raw/main/docker-compose.yml"
-COMPOSE_DIR="/var/docker"
+COMPOSE_DIR="/tmp/docker"
 
 # Ensure Docker is running
 echo "Waiting for Docker to start..."
