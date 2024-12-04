@@ -84,7 +84,7 @@ mkdir -p "$tmp"/usr/bin
 makefile root:root 0755 "$tmp"/usr/bin/hello <<EOF
 #!/bin/sh
 
-echo "hello world"
+echo "hello VanderStack, welcome to your docker VM!"
 EOF
 
 makefile root:root 0755 "$tmp"/usr/bin/compose <<EOF
@@ -128,14 +128,17 @@ mkdir -p "$tmp"/etc/init.d
 # Init script for compose
 makefile root:root 0744 "$tmp"/etc/init.d/compose <<EOF
 #!/sbin/openrc-run
+
 description="Compose script for running Docker Compose workloads"
 command="/usr/bin/compose"
 command_background="yes"
+pidfile="/run/compose.pid"
 EOF
 
 # Init script for hello
 makefile root:root 0744 "$tmp"/etc/init.d/hello <<EOF
 #!/sbin/openrc-run
+
 description="Hello world script"
 command="/usr/bin/hello"
 EOF
