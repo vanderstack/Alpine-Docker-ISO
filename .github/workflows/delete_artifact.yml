@@ -1,10 +1,10 @@
-name: Delete Artifact
+name: Delete GitHub Artifacts
 
 on:
   workflow_dispatch:
     inputs:
-      artifact_name:
-        description: 'Name of the artifact to delete'
+      artifact_id:
+        description: 'ID of the artifact to delete'
         required: true
         type: string
 
@@ -13,30 +13,35 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Set up GitHub CLI
-        uses: cli/cli@v2
+      - name: Delete selected artifact
+        uses: actions/github-script@v6
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: List and delete artifact
-        run: |
-          echo "Looking for artifact: ${{ github.event.inputs.artifact_name }}"
-
-          # List all artifacts
-          artifacts=$(gh run artifacts list --repo ${{ github.repository }} --json name,id -q '.[] | "\(.name):\(.id)"')
-
-          # Check if the artifact exists
-          if echo "$artifacts" | grep -q "${{ github.event.inputs.artifact_name }}"; then
-            # Extract the artifact ID for the specified name
-            artifact_id=$(echo "$artifacts" | grep "${{ github.event.inputs.artifact_name }}" | cut -d ':' -f2)
-            echo "Found artifact ID: $artifact_id"
+          script: |
+            const response = await github.rest.actions.listArtifactsForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            });
             
-            # Delete the artifact
-            echo "Deleting artifact: ${{ github.event.inputs.artifact_name }}"
-            gh run artifacts delete "$artifact_id" --repo ${{ github.repository }} --confirm
-          else
-            echo "Artifact not found: ${{ github.event.inputs.artifact_name }}"
-          fi
+            const artifactId = '${{ inputs.artifact_id }}';
+            const artifactToDelete = response.data.artifacts.find(artifact => artifact.id === artifactId);
+
+            if (artifactToDelete) {
+              console.log(`Deleting artifact: ID: ${artifactToDelete.id}, Workflow: ${artifactToDelete.workflow_run.head_branch}, SHA: Workflow: ${artifactToDelete.workflow_run.head_sha}, Created: ${artifactToDelete.created_at}, Download: ${artifactToDelete.archive_download_url}`);
+              
+              await github.rest.actions.deleteArtifact({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                artifact_id: artifactToDelete.id
+              });
+              
+              console.log(`Artifact deleted successfully.`);
+            } else {
+              console.log(`Artifact with ID "${artifactId}" not found.`);
+              
+              if (response.data.artifacts.length > 0) {
+                const artifacts = response.data.artifacts;
+                console.log('Artifacts found:');
+                artifacts.forEach(artifact => {
+                  console.log(`ID: ${artifact.id}, Workflow: ${artifact.workflow_run.head_branch}, SHA: Workflow: ${artifact.workflow_run.head_sha}, Created: ${artifact.created_at}, Download: ${artifact.archive_download_url}`);
+              });
+            }
