@@ -3,17 +3,7 @@
 alpinelinux="v3.20.3"
 version="${alpinelinux%.*}"
 
-HOSTNAME="$1"
-if [ -z "$HOSTNAME" ]; then
-	echo "usage: $0 hostname"
-	exit 1
-fi
-
-SSHPASSWORD="$2"
-if [ -z "$SSHPASSWORD" ]; then
-	echo "usage: $0 $1 sshpassword"
-	exit 1
-fi
+HOSTNAME="vanderstack-docker-server"
 
 cleanup() {
 	rm -rf "$tmp"
