@@ -21,7 +21,7 @@ jobs:
               const artifacts = response.data.artifacts;
               console.log('Artifacts found:');
               artifacts.forEach(artifact => {
-                console.log(`ID: ${artifact.id}, Workflow: ${artifact.workflow_run.head_branch}, SHA: Workflow: ${artifact.workflow_run.head_sha}, Created: ${artifact.created_at}, Download: ${archive_download_url}`);
+                console.log(`ID: ${artifact.id}, Workflow: ${artifact.workflow_run.head_branch}, SHA: Workflow: ${artifact.workflow_run.head_sha}, Created: ${artifact.created_at}, Download: ${artifact.archive_download_url}`);
               });
             } else {
               console.log('No artifacts found.');
