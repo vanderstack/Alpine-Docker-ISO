@@ -10,5 +10,5 @@ profile_docker() {
 	apks="$apks \
 		docker docker-bash-completion docker-cli-compose \
 		bash-completion procps util-linux readline findutils sed coreutils sudo e2fsprogs lvm2"
-	apkovl="genapkovl-docker.sh vanderstack-docker-server"
+	apkovl="genapkovl-docker.sh vanderstack-docker-server $SSH_PASSWORD"
 }
