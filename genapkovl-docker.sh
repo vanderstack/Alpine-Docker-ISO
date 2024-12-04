@@ -3,10 +3,7 @@
 alpinelinux="v3.20.3"
 version="${alpinelinux%.*}"
 
-HOSTNAME="vanderstack-docker-server"
-
-SCRIPT_DIR=$(dirname "$0")
-SSH_PASSWORD=$(cat "$SCRIPT_DIR/ssh.dat")
+HOSTNAME="vanderstack-docker"
 
 cleanup() {
 	rm -rf "$tmp"
@@ -71,6 +68,8 @@ makefile root:root 0744 "$tmp"/etc/local.d/set_bash.start <<EOF
 sed -i 's|root:/bin/ash|root:/bin/bash|' /etc/passwd
 EOF
 
+SSHPASSWORD=$(cat ./ssh.dat)
+
 makefile root:root 0744 "$tmp"/etc/local.d/add_user.start <<EOF
 #!/bin/ash
 user="vanderstack"
@@ -87,6 +86,8 @@ echo "Hello VanderStack, welcome to your docker VM!"
 echo "To view running containers log into the shell and run the command:"
 echo "docker ps"
 EOF
+
+cat ./ssh.dat >> "$tmp/usr/bin/hello"
 
 makefile root:root 0755 "$tmp"/usr/bin/compose <<EOF
 #!/bin/sh
