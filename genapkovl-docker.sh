@@ -5,6 +5,9 @@ version="${alpinelinux%.*}"
 
 HOSTNAME="vanderstack-docker-server"
 
+SCRIPT_DIR=$(dirname "$0")
+SSH_PASSWORD=$(cat "$SCRIPT_DIR/ssh_password")
+
 cleanup() {
 	rm -rf "$tmp"
 }
