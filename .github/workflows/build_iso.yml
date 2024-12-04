@@ -1,3 +1,5 @@
+name: Publish ISO
+
 on:
   workflow_dispatch:
     inputs:
