@@ -48,8 +48,6 @@ jobs:
               --repository https://dl-cdn.alpinelinux.org/alpine/${{ github.event.inputs.version }}/main \
               --repository https://dl-cdn.alpinelinux.org/alpine/${{ github.event.inputs.version }}/community
 
-            rm ./ssh.dat
-
       - name: Upload files
         uses: actions/upload-artifact@v4
         with:
