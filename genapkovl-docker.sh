@@ -9,7 +9,11 @@ if [ -z "$HOSTNAME" ]; then
 	exit 1
 fi
 
-SSHPASS="$2"
+SSHPASSWORD="$2"
+if [ -z "$SSHPASSWORD" ]; then
+	echo "usage: $0 $1 sshpassword"
+	exit 1
+fi
 
 cleanup() {
 	rm -rf "$tmp"
