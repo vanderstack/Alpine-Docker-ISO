@@ -1,12 +1,14 @@
-env:
-  version: v3.20
-
-name: Alpine ISO Builder
-
 on:
-  push:
-    tags:
-    - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Alpine version'
+        required: true
+        default: 'v3.20'
+      tag:
+        description: 'Git Release Tag'
+        required: true
+        default: 'v1.0.0'
 
 jobs:
   build_ISOs:
@@ -27,13 +29,25 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Prevent duplicate tag creation
+        run: |
+          if git tag | grep -q "${{ github.event.inputs.tag }}"; then
+            echo "Tag already exists. Stopping workflow."
+            exit 1
+          fi
+
+      - name: Create a new tag
+        run: |
+          git tag -a "${{ github.event.inputs.tag }}" -m "Tag for Release ${{ github.event.inputs.tag }}"
+          git push origin "${{ github.event.inputs.tag }}"
+
       - name: Download aports
         run: git clone --depth=1 https://gitlab.alpinelinux.org/alpine/aports.git
 
       - name: Configure build keys
         run: echo | abuild-keygen -i -a
 
-      - name: Make ISO (${{ env.version }})
+      - name: Make ISO (${{ github.event.inputs.version }})
         env:
           SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }} 
         run: |
@@ -42,12 +56,12 @@ jobs:
           cd aports/scripts/
 
           ./mkimage.sh \
-              --tag ${version} \
+              --tag ${{ github.event.inputs.version }} \
               --arch x86_64 \
               --profile docker \
               --outdir ../../ \
-              --repository https://dl-cdn.alpinelinux.org/alpine/${version}/main \
-              --repository https://dl-cdn.alpinelinux.org/alpine/${version}/community
+              --repository https://dl-cdn.alpinelinux.org/alpine/${{ github.event.inputs.version }}/main \
+              --repository https://dl-cdn.alpinelinux.org/alpine/${{ github.event.inputs.version }}/community
 
       - name: Upload files
         uses: actions/upload-artifact@v4
@@ -72,7 +86,7 @@ jobs:
           echo -e "Changelog\n---------" > changelog.txt
           git log --reverse --pretty=format:"%h %s" $(git describe --tags --abbrev=0 HEAD^)..HEAD >> changelog.txt
 
-          gh release create ${{ github.ref_name }} \
+          gh release create {{ github.event.inputs.tag }} \
             --verify-tag \
             --latest \
             --draft \
