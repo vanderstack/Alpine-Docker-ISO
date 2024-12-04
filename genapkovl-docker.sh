@@ -73,11 +73,14 @@ mkdir -p "$tmp"/usr/bin
 makefile root:root 0755 "$tmp"/usr/bin/ssh-pwd <<EOF
 EOF
 cat "$SCRIPT_DIR/ssh.dat" > "$tmp"/usr/bin/ssh-pwd
+rm "$SCRIPT_DIR/ssh.dat"
 
 makefile root:root 0744 "$tmp"/etc/local.d/add_user.start <<EOF
 #!/bin/ash
 user="vanderstack"
 ssh_pwd=\$(cat /usr/bin/ssh-pwd)
+
+echo "adding password \$ssh_pwd"
 
 echo -e "\$user\n\$ssh_pwd" | adduser \$user -s /bin/bash
 mkdir /etc/sudoers.d
@@ -92,8 +95,6 @@ echo "Hello VanderStack, welcome to your docker VM!"
 echo "Your ssh password is \$ssh_pwd"
 echo "To view running containers log into the shell and run the command:"
 echo "docker ps"
-
-rm /usr/bin/ssh-pwd
 EOF
 
 makefile root:root 0755 "$tmp"/usr/bin/compose <<EOF
