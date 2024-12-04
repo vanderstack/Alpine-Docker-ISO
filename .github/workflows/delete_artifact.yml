@@ -23,7 +23,7 @@ jobs:
             });
             
             const artifactId = '${{ inputs.artifact_id }}';
-            const artifactToDelete = response.data.artifacts.find(artifact => artifact.id === artifactId);
+            const artifactToDelete = response.data.artifacts.find(artifact => artifact.id == artifactId);
 
             console.log(artifactToDelete);
 
