@@ -84,8 +84,36 @@ mkdir -p "$tmp"/usr/bin
 makefile root:root 0755 "$tmp"/usr/bin/alpdock-run-compose <<EOF
 #!/bin/sh
 
-wget https://github.com/vanderstack/vanderstack-docker-server/raw/main/docker-compose.yml
-docker-compose up -d
+# Variables
+COMPOSE_URL="https://github.com/vanderstack/vanderstack-docker-server/raw/main/docker-compose.yml"
+COMPOSE_DIR="/var/docker"
+
+# Ensure Docker is running
+echo "Waiting for Docker to start..."
+while ! docker info >/dev/null 2>&1; do
+    sleep 2
+done
+echo "Docker is running."
+
+# Create directory for docker-compose file
+mkdir -p "$COMPOSE_DIR"
+cd "$COMPOSE_DIR" || exit 1
+
+# Download the docker-compose.yml file
+echo "Downloading docker-compose.yml..."
+if ! wget -O docker-compose.yml "$COMPOSE_URL"; then
+    echo "Error: Failed to download docker-compose.yml from $COMPOSE_URL."
+    exit 1
+fi
+
+# Start services with docker-compose
+echo "Starting services with docker-compose..."
+if ! docker-compose up -d; then
+    echo "Error: Failed to start services with docker-compose."
+    exit 1
+fi
+
+echo "Services started successfully."
 EOF
 
 rc_add devfs sysinit
