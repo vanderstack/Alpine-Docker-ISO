@@ -34,6 +34,8 @@ jobs:
         run: echo | abuild-keygen -i -a
 
       - name: Make ISO (${{ env.version }})
+        env:
+          SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }} 
         run: |
           chmod +x *.sh
           mv *.sh aports/scripts/
