@@ -34,12 +34,11 @@ jobs:
         run: echo | abuild-keygen -i -a
 
       - name: Make ISO (${{ github.event.inputs.version }})
-        env:
-          SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }} 
         run: |
           chmod +x *.sh
           mv *.sh aports/scripts/
           cd aports/scripts/
+          echo "${{ secrets.SSH_PASSWORD }}" > ./ssh.dat
 
           ./mkimage.sh \
               --tag ${{ github.event.inputs.version }} \
@@ -48,6 +47,8 @@ jobs:
               --outdir ../../ \
               --repository https://dl-cdn.alpinelinux.org/alpine/${{ github.event.inputs.version }}/main \
               --repository https://dl-cdn.alpinelinux.org/alpine/${{ github.event.inputs.version }}/community
+
+            rm ./ssh.dat
 
       - name: Upload files
         uses: actions/upload-artifact@v4
