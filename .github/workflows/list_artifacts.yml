@@ -1,31 +1,27 @@
-name: List Artifacts
+name: List GitHub Artifacts
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: # Triggered manually
 
 jobs:
   list-artifacts:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Set up GitHub CLI
-        uses: github/cli-action@v2
+      - name: List all artifacts
+        uses: actions/github-script@v6
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const artifacts = await github.rest.actions.listArtifactsForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            });
 
-      - name: List artifacts
-        run: |
-          # List all artifacts in the repository
-          echo "Listing artifacts in the repository..."
-
-          artifacts=$(gh run artifacts list --repo ${{ github.repository }} --json name,id -q '.[] | "\(.name):\(.id)"')
-
-          if [ -z "$artifacts" ]; then
-            echo "No artifacts found."
-          else
-            echo "Artifacts found:"
-            echo "$artifacts"
-          fi
+            if (artifacts.data.length > 0) {
+              console.log('Artifacts found:');
+              artifacts.data.forEach(artifact => {
+                console.log(`Name: ${artifact.name}, Created: ${artifact.created_at}`);
+              });
+            } else {
+              console.log('No artifacts found.');
+            }
