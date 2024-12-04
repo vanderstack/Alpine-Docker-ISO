@@ -104,7 +104,7 @@ rc_add networking boot
 rc_add local boot
 
 rc_add docker default
-rc_add alpdock-run-compose
+rc_add alpdock-run-compose default
 rc_add sshd default
 
 rc_add mount-ro shutdown
