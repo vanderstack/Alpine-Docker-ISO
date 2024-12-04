@@ -12,12 +12,13 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const artifacts = await github.rest.actions.listArtifactsForRepo({
+            const response = await github.rest.actions.listArtifactsForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo
             });
 
-            if (artifacts.length > 0) {
+            if (response.data.artifacts.length > 0) {
+              const artifacts = response.data.artifacts;
               console.log('Artifacts found:');
               artifacts.forEach(artifact => {
                 console.log(`ID: ${artifact.id}, Workflow: ${artifact.workflow_run.head_branch}, SHA: Workflow: ${artifact.workflow_run.head_sha}, Created: ${artifact.created_at}, Download: ${archive_download_url}`);
