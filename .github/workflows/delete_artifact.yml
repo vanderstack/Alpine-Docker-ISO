@@ -25,8 +25,6 @@ jobs:
             const artifactId = '${{ inputs.artifact_id }}';
             const artifactToDelete = response.data.artifacts.find(artifact => artifact.id == artifactId);
 
-            console.log(artifactToDelete);
-
             if (artifactToDelete) {
               console.log(`Deleting artifact: ID: ${artifactToDelete.id}, Workflow: ${artifactToDelete.workflow_run.head_branch}, SHA: Workflow: ${artifactToDelete.workflow_run.head_sha}, Created: ${artifactToDelete.created_at}, Download: ${artifactToDelete.archive_download_url}`);
               
@@ -37,6 +35,12 @@ jobs:
               });
               
               console.log(`Artifact deleted successfully.`);
+              
+              console.log('Remaining artifacts:');
+              response.data.artifacts.filter(artifact => artifact.id != artifactToDelete).forEach(artifact => {
+                console.log(`ID: ${artifact.id}, Workflow: ${artifact.workflow_run.head_branch}, SHA: Workflow: ${artifact.workflow_run.head_sha}, Created: ${artifact.created_at}, Download: ${artifact.archive_download_url}`);
+              });
+              
             } else {
               console.log(`Artifact with ID "${artifactId}" not found.`);
               
