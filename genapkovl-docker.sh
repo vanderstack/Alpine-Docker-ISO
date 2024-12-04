@@ -9,6 +9,8 @@ if [ -z "$HOSTNAME" ]; then
 	exit 1
 fi
 
+SSHPASS="$2"
+
 cleanup() {
 	rm -rf "$tmp"
 }
@@ -74,8 +76,8 @@ EOF
 
 makefile root:root 0744 "$tmp"/etc/local.d/add_user.start <<EOF
 #!/bin/ash
-user="linux"
-echo -e "\$user\n\$user" | adduser \$user -s /bin/bash
+user="vanderstack"
+echo -e "\$user\n\$SSHPASS" | adduser \$user -s /bin/bash
 mkdir /etc/sudoers.d
 echo "\$user ALL=(ALL) ALL" > /etc/sudoers.d/\$user && chmod 0440 /etc/sudoers.d/\$user
 EOF
