@@ -1,0 +1,42 @@
+name: Delete Artifact
+
+on:
+  workflow_dispatch:
+    inputs:
+      artifact_name:
+        description: 'Name of the artifact to delete'
+        required: true
+        type: string
+
+jobs:
+  delete-artifact:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up GitHub CLI
+        uses: cli/cli@v2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: List and delete artifact
+        run: |
+          echo "Looking for artifact: ${{ github.event.inputs.artifact_name }}"
+
+          # List all artifacts
+          artifacts=$(gh run artifacts list --repo ${{ github.repository }} --json name,id -q '.[] | "\(.name):\(.id)"')
+
+          # Check if the artifact exists
+          if echo "$artifacts" | grep -q "${{ github.event.inputs.artifact_name }}"; then
+            # Extract the artifact ID for the specified name
+            artifact_id=$(echo "$artifacts" | grep "${{ github.event.inputs.artifact_name }}" | cut -d ':' -f2)
+            echo "Found artifact ID: $artifact_id"
+            
+            # Delete the artifact
+            echo "Deleting artifact: ${{ github.event.inputs.artifact_name }}"
+            gh run artifacts delete "$artifact_id" --repo ${{ github.repository }} --confirm
+          else
+            echo "Artifact not found: ${{ github.event.inputs.artifact_name }}"
+          fi
