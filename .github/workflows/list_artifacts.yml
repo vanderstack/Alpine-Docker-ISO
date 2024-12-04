@@ -17,12 +17,10 @@ jobs:
               repo: context.repo.repo
             });
 
-            console.log(artifacts);
-
-            if (artifacts.data.length > 0) {
+            if (artifacts.length > 0) {
               console.log('Artifacts found:');
-              artifacts.data.forEach(artifact => {
-                console.log(`Name: ${artifact.name}, Created: ${artifact.created_at}`);
+              artifacts.forEach(artifact => {
+                console.log(`ID: ${artifact.id}, Workflow: ${artifact.workflow_run.head_branch}, SHA: Workflow: ${artifact.workflow_run.head_sha}, Created: ${artifact.created_at}, Download: ${archive_download_url}`);
               });
             } else {
               console.log('No artifacts found.');
