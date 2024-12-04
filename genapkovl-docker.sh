@@ -84,7 +84,9 @@ mkdir -p "$tmp"/usr/bin
 makefile root:root 0755 "$tmp"/usr/bin/hello <<EOF
 #!/bin/sh
 
-echo "hello VanderStack, welcome to your docker VM!"
+echo "Hello VanderStack, welcome to your docker VM!"
+echo "To view running containers log into the shell and run the command:"
+echo "docker ps"
 EOF
 
 makefile root:root 0755 "$tmp"/usr/bin/compose <<EOF
