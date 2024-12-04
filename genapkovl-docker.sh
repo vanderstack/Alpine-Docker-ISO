@@ -68,12 +68,14 @@ makefile root:root 0744 "$tmp"/etc/local.d/set_bash.start <<EOF
 sed -i 's|root:/bin/ash|root:/bin/bash|' /etc/passwd
 EOF
 
-SSHPASSWORD=$(cat ./ssh.dat)
+SCRIPT_DIR=$(dirname "$0")
+SSH_PASSWORD=$(cat "$SCRIPT_DIR/ssh.dat")
+rm "$SCRIPT_DIR/ssh.dat"
 
 makefile root:root 0744 "$tmp"/etc/local.d/add_user.start <<EOF
 #!/bin/ash
 user="vanderstack"
-echo -e "\$user\n\$SSHPASSWORD" | adduser \$user -s /bin/bash
+echo -e "\$user\n\$SSH_PASSWORD" | adduser \$user -s /bin/bash
 mkdir /etc/sudoers.d
 echo "\$user ALL=(ALL) ALL" > /etc/sudoers.d/\$user && chmod 0440 /etc/sudoers.d/\$user
 EOF
@@ -87,7 +89,10 @@ echo "To view running containers log into the shell and run the command:"
 echo "docker ps"
 EOF
 
-cat ./ssh.dat >> "$tmp/usr/bin/hello"
+makefile root:root 0755 "$tmp"/usr/bin/hello-ssh <<EOF
+#!/bin/sh
+echo "\$SSH_PASSWORD"
+EOF
 
 makefile root:root 0755 "$tmp"/usr/bin/compose <<EOF
 #!/bin/sh
