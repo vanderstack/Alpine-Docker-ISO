@@ -17,6 +17,8 @@ jobs:
               repo: context.repo.repo
             });
 
+            console.log(artifacts);
+
             if (artifacts.data.length > 0) {
               console.log('Artifacts found:');
               artifacts.data.forEach(artifact => {
