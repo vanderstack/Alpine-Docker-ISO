@@ -1,19 +1,22 @@
-# AlpDock
+# Alpine Docker ISO
 Alpine Linux with docker preinstalled (Live Image)
 
-AlpDock includes only minimum amount of software needed to run Docker and SSH server.
+### Building an ISO
+Pushing a new tag triggers GitHub actions to build a new ISO and attach it to a draft release.
+
+### Managing repository ISOs
+Actions exist to List Github Artifacts or Delete GitHub Artifact by ID.
 
 ### Root account
-The root account does not have a password. To set it, type `passwd`.
+The root account does not have a password. To set it log in as root and type `passwd`.
 
 ### Networking
 DHCP is enabled on eth0.  
 To configure other interfaces run `setup-interfaces` and then `service networking restart` to apply settings.
 
 ### SSH
-By default, it is not possible to log into the root account via ssh: use `linux` account (pass: `linux`)
+By default, it is not possible to log into the root account via ssh: use account `vanderstack`.
 
-### Portainer
-Type `alpdock-run-portainer` to run Portainer.  
-You can log into your Portainer Server by opening a web browser and going to:  
-https://localhost:9443 (Replace localhost with the relevant IP address)
+### Docker-Compose
+On startup docker is automatically started
+On startup docker-compose.yml is pulled from VanderStack/vanderstack-docker-server/ and automatically started once docker is available  
