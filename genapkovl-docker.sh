@@ -81,10 +81,14 @@ echo "\$user ALL=(ALL) ALL" > /etc/sudoers.d/\$user && chmod 0440 /etc/sudoers.d
 EOF
 
 mkdir -p "$tmp"/usr/bin
-makefile root:root 0755 "$tmp"/usr/bin/alpdock-run-compose <<EOF
+makefile root:root 0755 "$tmp"/usr/bin/hello <<EOF
 #!/bin/sh
 
-set -x
+echo "hello world"
+EOF
+
+makefile root:root 0755 "$tmp"/usr/bin/compose <<EOF
+#!/bin/sh
 
 # Variables
 COMPOSE_URL="https://github.com/vanderstack/vanderstack-docker-server/raw/main/docker-compose.yml"
@@ -98,11 +102,12 @@ done
 echo "Docker is running."
 
 # Create directory for docker-compose file
+echo "Creating directory for docker-compose file at \$COMPOSE_DIR ..."
 mkdir -p "\$COMPOSE_DIR"
 cd "\$COMPOSE_DIR" || exit 1
 
 # Download the docker-compose.yml file
-echo "Downloading docker-compose.yml..."
+echo "Downloading docker-compose.yml from \$COMPOSE_URL ..."
 if ! wget -O docker-compose.yml "\$COMPOSE_URL"; then
     echo "Error: Failed to download docker-compose.yml from \$COMPOSE_URL."
     exit 1
@@ -116,6 +121,23 @@ if ! docker-compose up -d; then
 fi
 
 echo "Services started successfully."
+EOF
+
+# configure OpenRC init scripts for hello and compose so that rc_add works correctly to automatically start them
+mkdir -p "$tmp"/etc/init.d
+# Init script for compose
+makefile root:root 0744 "$tmp"/etc/init.d/compose <<EOF
+#!/sbin/openrc-run
+description="Compose script for running Docker Compose workloads"
+command="/usr/bin/compose"
+command_background="yes"
+EOF
+
+# Init script for hello
+makefile root:root 0744 "$tmp"/etc/init.d/hello <<EOF
+#!/sbin/openrc-run
+description="Hello world script"
+command="/usr/bin/hello"
 EOF
 
 rc_add devfs sysinit
@@ -134,8 +156,9 @@ rc_add networking boot
 rc_add local boot
 
 rc_add docker default
-rc_add alpdock-run-compose default
+rc_add compose default
 rc_add sshd default
+rc_add hello default
 
 rc_add mount-ro shutdown
 rc_add killprocs shutdown
