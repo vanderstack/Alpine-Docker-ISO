@@ -90,6 +90,7 @@ rm "$SCRIPT_DIR/ssh.dat"
 # Replace the placeholder in the first file with the content of the second file
 sed -i "s/PLACEHOLDER/$pwd/" "$user_file"
 
+mkdir -p "$tmp"/usr/bin
 makefile root:root 0755 "$tmp"/usr/bin/hello <<EOF
 #!/bin/sh
 
