@@ -72,7 +72,7 @@ EOF
 makefile root:root 0744 "$tmp"/etc/local.d/add_user.start <<EOF
 #!/bin/ash
 user="vanderstack"
-ssh_pwd=PLACEHOLDER
+ssh_pwd="PLACEHOLDER"
 
 echo -e "\$user\n\$ssh_pwd" | adduser \$user -s /bin/bash
 mkdir /etc/sudoers.d
