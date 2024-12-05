@@ -113,12 +113,8 @@ if [ -z "\$HOSTNAME" ]; then
 fi
 
 # Append the IP and hostname to /etc/hosts if not already present
-if ! grep -q \"$IP_ADDRESS" /etc/hosts; then
-  echo "\$IP_ADDRESS \$HOSTNAME" | sudo tee -a /etc/hosts
-  echo "Added \$IP_ADDRESS \$HOSTNAME to /etc/hosts."
-else
-  echo "Entry for \$IP_ADDRESS \$HOSTNAME already exists in /etc/hosts."
-fi
+echo "\$IP_ADDRESS \$HOSTNAME" >> /etc/hosts
+echo "Added \$IP_ADDRESS \$HOSTNAME to /etc/hosts."
 
 echo "Hello VanderStack, welcome to your docker VM!"
 echo "To view running containers log into the shell and run the command:"
