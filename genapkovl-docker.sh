@@ -75,9 +75,9 @@ makefile root:root 0744 "$tmp"/etc/local.d/add_user.start <<EOF
 # ssh_pwd="PLACEHOLDER"
 # echo -e "\$user\n\$ssh_pwd" | adduser \$user -s /bin/bash
 
-#user="linux"
-user="PLACEHOLDER"
-echo -e "\$user\n\$user" | adduser \$user -s /bin/bash
+user="linux"
+pass="linux"
+echo -e "\$user\n\$pass" | adduser \$user -s /bin/bash
 mkdir /etc/sudoers.d
 echo "\$user ALL=(ALL) ALL" > /etc/sudoers.d/\$user && chmod 0440 /etc/sudoers.d/\$user
 EOF
