@@ -94,6 +94,32 @@ mkdir -p "$tmp"/usr/bin
 makefile root:root 0755 "$tmp"/usr/bin/hello <<EOF
 #!/bin/sh
 
+# Get the IP address of eth0
+IP_ADDRESS=$(ip -4 addr show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
+
+# Check if an IP address was found
+if [ -z "\$IP_ADDRESS" ]; then
+  echo "Error: Unable to find an IP address for eth0."
+  exit 1
+fi
+
+# Get the hostname from /etc/hostname
+HOSTNAME=\$(cat /etc/hostname)
+
+# Check if the hostname was found
+if [ -z "\$HOSTNAME" ]; then
+  echo "Error: /etc/hostname is empty or missing."
+  exit 1
+fi
+
+# Append the IP and hostname to /etc/hosts if not already present
+if ! grep -q \"$IP_ADDRESS" /etc/hosts; then
+  echo "\$IP_ADDRESS \$HOSTNAME" | sudo tee -a /etc/hosts
+  echo "Added \$IP_ADDRESS \$HOSTNAME to /etc/hosts."
+else
+  echo "Entry for \$IP_ADDRESS \$HOSTNAME already exists in /etc/hosts."
+fi
+
 echo "Hello VanderStack, welcome to your docker VM!"
 echo "To view running containers log into the shell and run the command:"
 echo "docker ps"
