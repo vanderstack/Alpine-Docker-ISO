@@ -95,7 +95,7 @@ makefile root:root 0755 "$tmp"/usr/bin/hello <<EOF
 #!/bin/sh
 
 # Get the IP address of eth0
-IP_ADDRESS=$(ip -4 addr show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
+IP_ADDRESS=\$(ip -4 addr show eth0 | grep -oE '[0-9.]+' | grep '192')
 
 # Check if an IP address was found
 if [ -z "\$IP_ADDRESS" ]; then
