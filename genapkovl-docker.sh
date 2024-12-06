@@ -61,7 +61,7 @@ readline
 sed
 sudo
 util-linux
-nbt-scan
+nbtscan
 EOF
 
 makefile root:root 0644 "$tmp"/etc/apk/repositories <<EOF
