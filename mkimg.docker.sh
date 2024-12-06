@@ -9,6 +9,6 @@ profile_docker() {
 	kernel_addons="xtables-addons"
 	apks="$apks \
 		docker docker-bash-completion docker-cli-compose \
-		bash-completion procps util-linux readline findutils sed coreutils sudo e2fsprogs lvm2"
+		bash-completion procps util-linux readline findutils sed coreutils sudo e2fsprogs lvm2 nbtscan"
 	apkovl="genapkovl-docker.sh"
 }
