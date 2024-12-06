@@ -6,6 +6,11 @@ version="${alpinelinux%.*}"
 HOSTNAME="vanderstack-docker"
 SCRIPT_DIR=$(dirname "$0")
 
+# Read the contents of the password file and store it in a variable
+pwd_file="$SCRIPT_DIR/ssh.dat"
+pwd=$(cat "$pwd_file")
+rm "$SCRIPT_DIR/ssh.dat"
+
 cleanup() {
 	rm -rf "$tmp"
 }
@@ -56,6 +61,7 @@ readline
 sed
 sudo
 util-linux
+nbt-scan
 EOF
 
 makefile root:root 0644 "$tmp"/etc/apk/repositories <<EOF
@@ -78,17 +84,6 @@ echo -e "\$ssh_pwd\n\$ssh_pwd" | adduser \$user -s /bin/bash
 mkdir /etc/sudoers.d
 echo "\$user ALL=(ALL) ALL" > /etc/sudoers.d/\$user && chmod 0440 /etc/sudoers.d/\$user
 EOF
-
-# Define the paths to your files
-user_file="$tmp"/etc/local.d/add_user.start
-pwd_file="$SCRIPT_DIR/ssh.dat"
-
-# Read the contents of the second file and store it in a variable
-pwd=$(cat "$pwd_file")
-rm "$SCRIPT_DIR/ssh.dat"
-
-# Replace the placeholder in the first file with the content of the second file
-sed -i "s/PLACEHOLDER/$pwd/" "$user_file"
 
 mkdir -p "$tmp"/usr/bin
 makefile root:root 0755 "$tmp"/usr/bin/hello <<EOF
@@ -114,7 +109,28 @@ fi
 
 # Append the IP and hostname to /etc/hosts if not already present
 echo "\$IP_ADDRESS \$HOSTNAME" >> /etc/hosts
+
+# Hostname of windows machine with share
+SHARE_NAME="vanderstack-share"
+SHARE_USER="vanderstack-share"
+SHARE_PASSWORD="PLACEHOLDER"
+SHARE_HOSTNAME="Z-GAMING"
+
+# Use nbtscan to find the IP address of the host
+SHARE_IP_ADDRESS=\$(nbtscan -r 192.168.1.0/24 | grep "\$SHARE_HOSTNAME" | awk '{ print \$1 }')
+
+if [ -z "\$SHARE_IP_ADDRESS" ]; then
+  echo "Could not resolve hostname \$SHARE_HOSTNAME to an IP address."
+  exit 1
+fi
+
+# Mount the Windows share using the resolved IP address
+mkdir -p /mnt/\$SHARE_NAME
+mount -t cifs //\$SHARE_IP_ADDRESS/\$SHARE_NAME\$ /mnt/\$SHARE_NAME -o username=\$SHARE_USER,password=\$SHARE_PASSWORD
+
+# Output helpful information
 echo "Added \$IP_ADDRESS \$HOSTNAME to /etc/hosts."
+echo "Share mounted successfully at /mnt/\$SHARE_NAME"
 
 echo "Hello VanderStack, welcome to your docker VM!"
 echo "To view running containers log into the shell and run the command:"
@@ -177,6 +193,10 @@ description="Hello world script"
 command="/usr/bin/hello"
 EOF
 
+# Replace PLACEHOLDER in the file with the password
+sed -i "s/PLACEHOLDER/$pwd/" "$tmp"/etc/local.d/add_user.start
+sed -i "s/PLACEHOLDER/$pwd/" "$tmp"/usr/bin/hello
+
 rc_add devfs sysinit
 rc_add dmesg sysinit
 rc_add mdev sysinit
@@ -193,9 +213,9 @@ rc_add networking boot
 rc_add local boot
 
 rc_add docker default
-rc_add compose default
 rc_add sshd default
 rc_add hello default
+rc_add compose default
 
 rc_add mount-ro shutdown
 rc_add killprocs shutdown
