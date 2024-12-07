@@ -62,6 +62,7 @@ sed
 sudo
 util-linux
 nbtscan
+cifs-utils
 EOF
 
 makefile root:root 0644 "$tmp"/etc/apk/repositories <<EOF
