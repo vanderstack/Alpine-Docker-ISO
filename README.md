@@ -1,6 +1,10 @@
 # Alpine Docker ISO
 This repository allows for building an Alpine Linux live ISO with docker preinstalled.
 
+### Purpose
+As I was prototyping my stack I wanted to host my workloads within virtualbox for portabiity and ease of setup and administration.  
+My stack has deprecated this approach in favor of using proxmox to host an alpine container with docker compose and portainer.  
+
 ### Repository Secrets
 The repository secret named `SSH_PASSWORD` must be configured prior to building the ISO.
 This password will also be used to mount the network share for persistent storage.
